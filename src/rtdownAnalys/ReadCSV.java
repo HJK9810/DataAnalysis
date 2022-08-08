@@ -1,12 +1,7 @@
 package rtdownAnalys;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 import java.util.Map.Entry;
 
 import com.opencsv.CSVReader;
@@ -18,6 +13,7 @@ public class ReadCSV {
 	private static String SUJIFILE = "아파트(매매)__실거래가_20220808095913.csv";
 	private static String SEOUL = "아파트(매매)__실거래가_20220808154349.csv";
 	private static HashMap<String, List<String>> landDatas = new HashMap<String, List<String>>();
+	private static HashSet<Integer> title = new HashSet<>();
 	
 	protected void DataInput() {
 //		HashMap<String, List<String>> landDatas = new HashMap<String, List<String>>();
@@ -37,6 +33,7 @@ public class ReadCSV {
 				else datas = landDatas.get(keys);
 
 				String price = readLine[8].replace(",", "");
+				title.add(Integer.parseInt(readLine[6]));
 				datas.add(readLine[6] + "," + price);
 //				System.out.println(readLine[4] + ", " + readLine[5]);
 				landDatas.put(keys, datas);
@@ -51,10 +48,18 @@ public class ReadCSV {
 		File f = new File("C:\\javatest\\dataAnalysis\\Analysis\\월별서울아파트매매가.csv");
 		try {
 			CSVWriter write = new CSVWriter(new FileWriter(f));
-			String[] title = {"시군구", "단지명", "전용면적(㎡)", "202107", "202108", "202109", "202110", "202111", "202112", 
-					"202201", "202202", "202203", "202204", "202205", "202206", "202207"};
+			List<Integer> years = new ArrayList<Integer>(title);
+			Collections.sort(years);
+			List<String> indexTitle = new ArrayList<String>();
 			
-			write.writeNext(title);
+			indexTitle.add("시군구");
+			indexTitle.add("단지명");
+			indexTitle.add("전용면적(㎡)");
+			for(int year : years) {
+				indexTitle.add(Integer.toString(year));
+			}
+			
+			write.writeNext(indexTitle.toArray(new String[indexTitle.size()]));
 			
 			for (Entry<String, List<String>> entry : landDatas.entrySet()) {
 				String[] perDates = new String[15];
@@ -72,8 +77,7 @@ public class ReadCSV {
 					if(date.isEmpty()) date = ary[0];
 					
 			   		if(!date.equals(ary[0])) {
-			   			if(date.substring(0, 4).equals("2022")) idx = Integer.parseInt(date) - 202201 + 9;
-			   			else idx = Integer.parseInt(date) - 202107 + 3;
+			   			idx = indexTitle.indexOf(date);
 			   			
 			   			if(sum != 0 && count != 0) perDates[idx] = String.format("%.2f", sum / count);
 			   			date = ary[0];
@@ -85,8 +89,7 @@ public class ReadCSV {
 			   		}
 				}
 				
-				if(date.substring(0, 4).equals("2022")) idx = Integer.parseInt(date) - 202201 + 8;
-	   			else idx = Integer.parseInt(date) - 202107 + 2;
+				idx = indexTitle.indexOf(date);
 				perDates[idx] = String.format("%.2f", sum / count);
 				write.writeNext(perDates);
 			}
