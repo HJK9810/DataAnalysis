@@ -9,7 +9,7 @@ import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
 public class ReadCSV {
-    private static String DIRECTION = "C:\\javatest\\dataAnalysis\\Apt";
+    private static String DIRECTION = "C:\\javatest\\dataAnalysis\\AptRent";
     private static HashMap<String, List<String>> landDatas = new HashMap<String, List<String>>();
     private static HashSet<Integer> title = new HashSet<>();
 
@@ -35,25 +35,25 @@ public class ReadCSV {
                 count++;
                 if (count < 17) continue;
 
-                if(!readLine[12].equals("")) continue;
+//                if(!readLine[12].equals("")) continue;
 
                 double floorSize = 0;
                 String keys;
                 int addN = 0;
                 try {
-                    floorSize = Double.parseDouble(readLine[5]);
+                    floorSize = Double.parseDouble(readLine[6]);
                     keys = readLine[0] + "\t" + readLine[4] + "\t" + Math.floor(floorSize);
                 } catch (NumberFormatException  e) {
-                    keys = readLine[0] + "\t" + readLine[4]+","+ readLine[5] + "\t" + Math.floor(Double.parseDouble(readLine[6]));
+                    keys = readLine[0] + "\t" + readLine[4]+","+ readLine[5] + "\t" + Math.floor(Double.parseDouble(readLine[7]));
                     addN = 1;
                 }
 
                 if (!landDatas.containsKey(keys)) datas = new ArrayList<>();
                 else datas = landDatas.get(keys);
 
-                String price = readLine[8 + addN].replace(",", "");
-                title.add(Integer.parseInt(readLine[6]));
-                datas.add(readLine[6 + addN] + "," + price);
+                String price = readLine[9 + addN].replace(",", "");
+                title.add(Integer.parseInt(readLine[7]));
+                datas.add(readLine[7 + addN] + "," + price);
                 landDatas.put(keys, datas);
             }
         } catch (IOException | CsvValidationException e) {
@@ -65,7 +65,7 @@ public class ReadCSV {
     protected void Datawrite() {
         HashMap<String, List<String>> check = landDatas;
         HashSet<Integer> check2 = title;
-        File f = new File("C:\\javatest\\dataAnalysis\\Analysis\\전체월별서울아파트매매가.csv");
+        File f = new File("C:\\javatest\\dataAnalysis\\Analysis\\전체월별서울아파트전세가.csv");
         try {
             CSVWriter write = new CSVWriter(new FileWriter(f));
             List<Integer> years = new ArrayList<Integer>(title);
@@ -98,6 +98,7 @@ public class ReadCSV {
 
                     if (!date.equals(ary[0])) {
                         idx = indexTitle.indexOf(date);
+                        if(idx == -1) continue;
 
                         if (sum != 0 && count != 0) perDates[idx] = String.format("%.2f", sum / count);
                         date = ary[0];
@@ -108,8 +109,9 @@ public class ReadCSV {
                         count++;
                     }
                 }
-
                 idx = indexTitle.indexOf(date);
+                if(idx == -1) continue;
+                
                 perDates[idx] = String.format("%.2f", sum / count);
                 write.writeNext(perDates);
             }
