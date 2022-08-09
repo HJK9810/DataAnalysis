@@ -63,8 +63,6 @@ public class ReadCSV {
     }
 
     protected void Datawrite() {
-        HashMap<String, List<String>> check = landDatas;
-        HashSet<Integer> check2 = title;
         File f = new File("C:\\javatest\\dataAnalysis\\Analysis\\전체월별서울아파트전세가.csv");
         try {
             CSVWriter write = new CSVWriter(new FileWriter(f));
