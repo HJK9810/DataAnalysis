@@ -22,7 +22,7 @@ public class ReadCSV {
         }
         return fileList;
     }
-
+    
     protected void DataInput(String fileName) {
         try {
             System.out.println(fileName);
@@ -35,8 +35,45 @@ public class ReadCSV {
                 count++;
                 if (count < 17) continue;
 
-//                if(!readLine[12].equals("")) continue;
+                if(!readLine[12].equals("")) continue;
 
+                double floorSize = 0;
+                String keys;
+                int addN = 0;
+                try {
+                    floorSize = Double.parseDouble(readLine[5]);
+                    keys = readLine[0] + "\t" + readLine[4] + "\t" + Math.floor(floorSize);
+                } catch (NumberFormatException  e) {
+                    keys = readLine[0] + "\t" + readLine[4]+","+ readLine[5] + "\t" + Math.floor(Double.parseDouble(readLine[6]));
+                    addN = 1;
+                }
+
+                if (!landDatas.containsKey(keys)) datas = new ArrayList<>();
+                else datas = landDatas.get(keys);
+
+                String price = readLine[8 + addN].replace(",", "");
+                title.add(Integer.parseInt(readLine[6]));
+                datas.add(readLine[6 + addN] + "," + price);
+                landDatas.put(keys, datas);
+            }
+        } catch (IOException | CsvValidationException e) {
+            e.printStackTrace();
+        }
+        System.out.println();
+    }
+
+    protected void RentDataInput(String fileName) {
+        try {
+            System.out.println(fileName);
+            CSVReader read = new CSVReader(new InputStreamReader(new FileInputStream(fileName), "CP949"));
+            String[] readLine;
+            int count = 0;
+            List<String> datas = new ArrayList<>();
+
+            while ((readLine = read.readNext()) != null) {
+                count++;
+                if (count < 17) continue;
+                
                 double floorSize = 0;
                 String keys;
                 int addN = 0;
