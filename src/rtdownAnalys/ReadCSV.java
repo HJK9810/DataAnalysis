@@ -9,12 +9,11 @@ import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
 public class ReadCSV {
-    private static String DIRECTION = "C:\\javatest\\dataAnalysis\\AptRent";
     private static HashMap<String, List<String>> landDatas = new HashMap<String, List<String>>();
     private static HashSet<Integer> title = new HashSet<>();
 
-    public List getFileList() {
-        File myDir = new File(DIRECTION);
+    public List getFileList(String root) {
+        File myDir = new File(root);
         File[] contents = myDir.listFiles();
         List<File> fileList = new ArrayList<>();
         for (File temp : contents) {
@@ -42,9 +41,9 @@ public class ReadCSV {
                 int addN = 0;
                 try {
                     floorSize = Double.parseDouble(readLine[5]);
-                    keys = readLine[0] + "\t" + readLine[4] + "\t" + Math.floor(floorSize);
+                    keys = readLine[0] + "//" + readLine[4] + "//" + Math.floor(floorSize);
                 } catch (NumberFormatException  e) {
-                    keys = readLine[0] + "\t" + readLine[4]+","+ readLine[5] + "\t" + Math.floor(Double.parseDouble(readLine[6]));
+                    keys = readLine[0] + "//" + readLine[4]+","+ readLine[5] + "//" + Math.floor(Double.parseDouble(readLine[6]));
                     addN = 1;
                 }
 
@@ -52,7 +51,7 @@ public class ReadCSV {
                 else datas = landDatas.get(keys);
 
                 String price = readLine[8 + addN].replace(",", "");
-                title.add(Integer.parseInt(readLine[6]));
+                title.add(Integer.parseInt(readLine[6 + addN]));
                 datas.add(readLine[6 + addN] + "," + price);
                 landDatas.put(keys, datas);
             }
@@ -79,9 +78,9 @@ public class ReadCSV {
                 int addN = 0;
                 try {
                     floorSize = Double.parseDouble(readLine[6]);
-                    keys = readLine[0] + "\t" + readLine[4] + "\t" + Math.floor(floorSize);
+                    keys = readLine[0] + "//" + readLine[4] + "//" + Math.floor(floorSize);
                 } catch (NumberFormatException  e) {
-                    keys = readLine[0] + "\t" + readLine[4]+","+ readLine[5] + "\t" + Math.floor(Double.parseDouble(readLine[7]));
+                    keys = readLine[0] + "//" + readLine[4]+","+ readLine[5] + "//" + Math.floor(Double.parseDouble(readLine[7]));
                     addN = 1;
                 }
 
@@ -89,7 +88,7 @@ public class ReadCSV {
                 else datas = landDatas.get(keys);
 
                 String price = readLine[9 + addN].replace(",", "");
-                title.add(Integer.parseInt(readLine[7]));
+                title.add(Integer.parseInt(readLine[7 + addN]));
                 datas.add(readLine[7 + addN] + "," + price);
                 landDatas.put(keys, datas);
             }
@@ -99,8 +98,8 @@ public class ReadCSV {
         System.out.println();
     }
 
-    protected void Datawrite() {
-        File f = new File("C:\\javatest\\dataAnalysis\\Analysis\\전체월별서울아파트전세가.csv");
+    protected void Datawrite(String filename) {
+        File f = new File("C:\\javatest\\dataAnalysis\\ApartDeal\\"+filename+".csv");
         try {
             CSVWriter write = new CSVWriter(new FileWriter(f));
             List<Integer> years = new ArrayList<Integer>(title);
@@ -119,9 +118,9 @@ public class ReadCSV {
             for (Entry<String, List<String>> entry : landDatas.entrySet()) {
                 String[] perDates = new String[indexTitle.size()];
                 List<String> data = entry.getValue();
-                perDates[0] = entry.getKey().split("\t")[0];
-                perDates[1] = entry.getKey().split("\t")[1];
-                perDates[2] = entry.getKey().split("\t")[2];
+                perDates[0] = entry.getKey().split("//")[0];
+                perDates[1] = entry.getKey().split("//")[1];
+                perDates[2] = entry.getKey().split("//")[2];
                 String date = "";
                 double sum = 0;
                 int count = 0;
